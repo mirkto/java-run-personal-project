@@ -20,6 +20,6 @@ public class Person {
     //------------- methods -------------
     @Override
     public String toString() {
-        return "Person -  Id: " + id + ",  Name: " + name;
+        return "\nPerson -  Id: " + id + ",  Name: " + name;
     }
 }

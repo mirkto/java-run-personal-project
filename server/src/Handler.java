@@ -1,10 +1,8 @@
 package src;
 
-import org.codehaus.jackson.map.ObjectMapper;
-
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class Handler {
@@ -23,28 +21,22 @@ public class Handler {
 
     public static DefaultHandler FriendsListHandler() throws IOException {
         JsonReader reader = new JsonReader();
+        String fileName = "server/src/data/userBaseAlter.json";
 
-        String json = "[\n" +
-                "    {\n" +
-                "       \"id\":\"01\",\n" +
-                "       \"name\":\"Ivan\"\n" +
-                "   },\n" +
-                "    {\n" +
-                "       \"id\":\"02\",\n" +
-                "       \"name\":\"Dasha\"\n" +
-                "   }\n" +
-                "]";
-//        FileReader jsonFile = new FileReader("server/src/data/userBaseAlter.json");
+        String jsonFile = new String(Files.readAllBytes(Paths.get(fileName)));
+        List<Person> personList = reader.getPersonList(jsonFile);
 
-        List<Person> personList = reader.getPersonList(json);
-        for (Person person : personList) {
-            System.out.println(person);
-        }
+        checkBaseLoad(personList);
 
-//        src.Person user = new src.Person("0", "Anonim");
-//        String str = new ObjectMapper().writeValueAsString(user);
-        String str = "--- Users base:\n" + personList.toString() + "\n";
-
+        String str = "--- Users base:\n" + personList + "\n";
         return new DefaultHandler().setMessage(str);
+    }
+
+    private static void checkBaseLoad(List<Person> personList) {
+        System.out.print("--- checking the user_base load:");
+        for (Person person : personList) {
+            System.out.print(person);
+        }
+        System.out.println("\n--- end checking");
     }
 }
