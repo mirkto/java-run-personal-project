@@ -21,7 +21,7 @@ public class MyServer {
             server.createContext("/", HandlerPages.DefaultPage());
             server.createContext("/my", HandlerPages.MyPageHandler());
             server.createContext("/friends", HandlerPages.FriendsListHandler(usersBase));
-            server.createContext("/friends/search", HandlerPages.FriendsSearchHandler());
+            server.createContext("/friends/search", HandlerPages.FriendsSearchHandler(usersBase));
 
             server.setExecutor(null);
             server.start();
