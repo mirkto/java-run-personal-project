@@ -12,11 +12,8 @@ public class Handler implements HttpHandler {
 
     public Handler setMessage(String newMessage) { str = newMessage; return this; }
 
-
-
     @Override
     public void handle(HttpExchange exc) throws IOException {
-
         exc.sendResponseHeaders(200, str.length());
         OutputStream os = exc.getResponseBody();
         os.write(str.getBytes(StandardCharsets.UTF_8));

@@ -11,6 +11,7 @@ public class JsonReader {
     public List<User> getPersonList(String json) {
         ObjectMapper mapper = new ObjectMapper();
         List<User> objectList = new ArrayList<>();
+
         try {
             objectList = Arrays.asList(mapper.readValue(json, User[].class));
             checkReader(objectList);
