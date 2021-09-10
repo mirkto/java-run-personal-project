@@ -2,22 +2,30 @@ package src;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class JsonReader {
-    public List<Person> getPersonList(String json) {
+    public List<User> getPersonList(String json) {
         ObjectMapper mapper = new ObjectMapper();
-        List<Person> personList = new ArrayList<>();
+        List<User> objectList = new ArrayList<>();
         try {
-            personList = Arrays.asList(mapper.readValue(json, Person[].class));
+            objectList = Arrays.asList(mapper.readValue(json, User[].class));
+            checkReader(objectList);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("--- Error: JsonReader ---");
         }
-        return personList;
+        return objectList;
+    }
+
+    private static void checkReader(List<User> userList) {
+        System.out.print("--- checking the JsonReader:");
+        for (User user : userList) {
+            //System.out.print(user);
+        }
+        System.out.println(" OK ---");
     }
 }

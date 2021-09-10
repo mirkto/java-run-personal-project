@@ -1,18 +1,28 @@
 import com.sun.net.httpserver.HttpServer;
-import src.Handler;
+import src.HandlerPages;
+import src.User;
+import src.UserBaseLoader;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.List;
 
 public class MyServer {
     public static void main(String[] args) {
-          HttpServer server;
+        InetSocketAddress   address;
+        HttpServer          server;
+        List<User>          usersBase;
+
         try {
-            server = HttpServer.create(new InetSocketAddress(8080), 0);
-            server.createContext("/", Handler.DefaultPage());
-            server.createContext("/my", Handler.MyPageHandler());
-            server.createContext("/friends", Handler.FriendsListHandler());
-            server.createContext("/friends/search", Handler.FriendsSearchHandler());
+            usersBase = UserBaseLoader.loadBase();
+            address = new InetSocketAddress(8080);
+            server = HttpServer.create(address, 0);
+
+            server.createContext("/", HandlerPages.DefaultPage());
+            server.createContext("/my", HandlerPages.MyPageHandler());
+            server.createContext("/friends", HandlerPages.FriendsListHandler(usersBase));
+            server.createContext("/friends/search", HandlerPages.FriendsSearchHandler());
+
             server.setExecutor(null);
             server.start();
         } catch (IOException e) {

@@ -1,42 +1,25 @@
 package src;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
-public class Handler {
+public class Handler implements HttpHandler {
+    private String str = "<h1>Hello! This is \"java run personal task\" by ngonzo.</h1>";
 
-    public static DefaultHandler DefaultPage() {
-        return new DefaultHandler();
-    }
+    public Handler setMessage(String newMessage) { str = newMessage; return this; }
 
-    public static DefaultHandler MyPageHandler() {
-        return new DefaultHandler().setMessage("<h1>My Account page</h1>");
-    }
 
-    public static DefaultHandler FriendsSearchHandler() {
-        return new DefaultHandler().setMessage("<h1>Friends Search page</1>");
-    }
 
-    public static DefaultHandler FriendsListHandler() throws IOException {
-        JsonReader reader = new JsonReader();
-        String fileName = "server/src/data/userBaseAlter.json";
+    @Override
+    public void handle(HttpExchange exc) throws IOException {
 
-        String jsonFile = new String(Files.readAllBytes(Paths.get(fileName)));
-        List<Person> personList = reader.getPersonList(jsonFile);
-
-        checkBaseLoad(personList);
-
-        String str = "--- Users base:\n" + personList + "\n";
-        return new DefaultHandler().setMessage(str);
-    }
-
-    private static void checkBaseLoad(List<Person> personList) {
-        System.out.print("--- checking the user_base load:");
-        for (Person person : personList) {
-            System.out.print(person);
-        }
-        System.out.println("\n--- end checking");
+        exc.sendResponseHeaders(200, str.length());
+        OutputStream os = exc.getResponseBody();
+        os.write(str.getBytes(StandardCharsets.UTF_8));
+        os.close();
     }
 }

@@ -1,11 +1,11 @@
 package src;
 
-public class Person {
+public class User {
     private String  id;
     private String  name;
     //------------- constructors -------------
-    public Person() {}
-    public Person(String id, String name) {
+    public User() {}
+    public User(String id, String name) {
         this.id = id;
         this.name = name;
     }
