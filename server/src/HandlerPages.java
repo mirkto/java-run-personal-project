@@ -10,11 +10,11 @@ public class HandlerPages {
     }
 
     public static Handler MyPageHandler() {
-        return new Handler().setMessage("<h1>My Account page</h1>");
+        return new Handler().setResponse("<h1>My Account page</h1>");
     }
 
     public static Handler FriendsListHandler(List<User> usersBase) throws IOException {
-        return new Handler().setMessage("<h1>" + usersBase.toString() + "</h1>");
+        return new Handler().setResponse("<h1>" + usersBase.toString() + "</h1>");
     }
 
     public static Handler FriendsSearchHandler(List<User> usersBase) {

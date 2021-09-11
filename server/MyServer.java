@@ -13,9 +13,9 @@ public class MyServer {
         HttpServer          server;
         List<User>          usersBase;
 
+        address = new InetSocketAddress(8080);
         try {
             usersBase = UserBaseLoader.loadBase();
-            address = new InetSocketAddress(8080);
             server = HttpServer.create(address, 0);
 
             server.createContext("/", HandlerPages.DefaultPage());
