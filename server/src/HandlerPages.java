@@ -14,12 +14,11 @@ public class HandlerPages {
     }
 
     public static Handler FriendsListHandler(List<User> usersBase) throws IOException {
-        String response = "--- Users base:\n" + usersBase + "\n";
-        return new Handler().setMessage(response);
+        return new Handler().setMessage("<h1>" + usersBase.toString() + "</h1>");
     }
 
     public static Handler FriendsSearchHandler(List<User> usersBase) {
-        Handler response = new Handler().setMessage("<h1>Friends Search page</1>");
+        Handler response = new Handler();
         response.setUserBase(usersBase);
         response.setCommand("search");
         return response;
