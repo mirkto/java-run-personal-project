@@ -1,1 +1,1 @@
-# java-run-personal-task
+# java-run-personal-project
