@@ -1,28 +1,39 @@
 package src;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 public class UserBaseLoader {
     public static List<User> loadBase() throws IOException {
-    JsonReader reader = new JsonReader();
-    String fileName = "server/src/data/userBase.json";
+        String fileName = "server/src/data/userBase.json";
+        String jsonFile = new String(Files.readAllBytes(Paths.get(fileName)));
 
-    String jsonFile = new String(Files.readAllBytes(Paths.get(fileName)));
-    List<User> personList = reader.getPersonList(jsonFile);
+        ObjectMapper mapper = new ObjectMapper();
+        List<User> objectList = Arrays.asList(mapper.readValue(jsonFile, User[].class));
 
-    checkBaseLoad(personList);
-
-    return personList;
+        checkBase(objectList);
+        return objectList;
     }
 
-    private static void checkBaseLoad(List<User> userList) {
-        System.out.print("--- checking the user_base load: ");
-        for (User user : userList) {
-//            System.out.print(user);
+    static void checkBase(List<User> userList) {
+        System.out.print("--- checking the UserBase:");
+
+        if (userList == null) {
+            System.out.println(" EMPTY base");
+            return ;
         }
-        System.out.println("Ok ---");
+
+        for (User user : userList) {
+            if (user == null) {
+                System.out.println(" EMPTY user");
+                return ;
+            }
+        }
+        System.out.println(" OK ---");
     }
 }

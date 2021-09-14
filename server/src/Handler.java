@@ -22,8 +22,9 @@ public class Handler implements HttpHandler {
     @Override
     public void handle(HttpExchange exc) throws IOException {
         System.out.println("\n--- new request came ---");
+
         queryStr = exc.getRequestURI().getQuery();
-        if (command == "search") {
+        if (command.equals("search")) {
             response = commandSearch();
         }
         exc.sendResponseHeaders(200, response.length());
@@ -34,15 +35,14 @@ public class Handler implements HttpHandler {
 
     private String commandSearch() {
         System.out.println("- request command is: search");
-        String request;
 
-        if (checkBaseConnect() == false) {
+        if (!checkBaseConnect()) {
             return "<h1>Error: database loading error</h1>";
         }
-        if (checkQuery() == false) {
+        if (!checkQuery()) {
             return usersBase.toString();
         }
-        request = parseQuery();
+        String request = parseQuery();
         if (request == null){
             return "<h1>Error: not correct query</h1>\n<h1>[]</h1>";
         }
@@ -51,6 +51,7 @@ public class Handler implements HttpHandler {
 
     private boolean checkBaseConnect() {
         System.out.print("- check users_base connect: ");
+
         if (usersBase == null) {
             System.out.print("Error");
             return false;
@@ -84,10 +85,8 @@ public class Handler implements HttpHandler {
 
     private String searchAndResponse(String value) {
         String result = "";
-        String userName;
-
         for (User user: usersBase) {
-            userName = user.getName().toLowerCase();
+            String userName = user.getName().toLowerCase();
             if (userName.equals(value)) {
                 System.out.print("\n- request found ");
                 if (!result.equals("")) {
