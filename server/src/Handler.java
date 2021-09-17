@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Locale;
 
 public class Handler implements HttpHandler {
     private List<User> usersBase = null;
@@ -36,17 +35,18 @@ public class Handler implements HttpHandler {
     private String commandSearch() {
         System.out.println("- request command is: search");
 
+        response = "";
         if (!checkBaseConnect()) {
             return "<h1>Error: database loading error</h1>";
         }
         if (!checkQuery()) {
             return usersBase.toString();
         }
-        String request = parseQuery();
-        if (request == null){
+        response = parseQuery();
+        if (response == null){
             return "<h1>Error: not correct query</h1>\n<h1>[]</h1>";
         }
-        return searchAndResponse(request);
+        return response;
     }
 
     private boolean checkBaseConnect() {
@@ -69,32 +69,46 @@ public class Handler implements HttpHandler {
     }
 
     private String parseQuery() {
-        System.out.print("- query: ");
+        System.out.println("- query parse: ");
 
-        int index = queryStr.lastIndexOf("=");
-        String param = queryStr.substring(0, index).toLowerCase();
-        String value = queryStr.substring(++index).toLowerCase();
-        System.out.print("\"" + param + "\":\"" + value + "\"");
-
-        if (!param.equals("name")) {
-            System.out.print("Error: not correct query");
-            return null;
+        String[] array = queryStr.split("&");
+        for (String str: array) {
+            String[] pair = str.split("=");
+            if (!checkPair(pair)) {
+                return null;
+            }
+            String tmp = addToResponse(pair);
+            if (!tmp.isEmpty() && !response.isEmpty()) {
+                response += ",";
+            }
+            response += tmp;
         }
-        return value;
+        System.out.println("- response: Ok ");
+        return "[" + response +"]" ;
     }
 
-    private String searchAndResponse(String value) {
+    private boolean checkPair(String[] pair) {
+        if (!pair[0].equalsIgnoreCase("name") &&
+                !pair[0].equalsIgnoreCase("id")) {
+            System.out.print("Error: \"" + pair[0] + "\"not correct query");
+            return false;
+        }
+        return true;
+    }
+
+
+    private String addToResponse(String[] pair) {
         String result = "";
         for (User user: usersBase) {
-            String userName = user.getName().toLowerCase();
-            if (userName.equals(value)) {
-                System.out.print("\n- request found ");
+            if (pair[1].equalsIgnoreCase(user.getName()) ||
+                    pair[1].equalsIgnoreCase(user.getId())) {
+                System.out.println(" request found");
                 if (!result.equals("")) {
                     result += ",";
                 }
                 result += user.toString();
             }
         }
-        return "[" + result +"]";
+        return result;
     }
 }
