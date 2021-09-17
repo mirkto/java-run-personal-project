@@ -3,10 +3,14 @@ package src;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class Handler implements HttpHandler {
     private List<User> usersBase = null;
@@ -18,9 +22,19 @@ public class Handler implements HttpHandler {
     public void setUserBase(List<User> newBase) { this.usersBase = newBase; }
     public Handler setResponse(String message) { response = message; return this; }
 
+    static Logger LOGGER;
+    static {
+        try(FileInputStream ins = new FileInputStream("server/src/data/log.config")) {
+            LogManager.getLogManager().readConfiguration(ins);
+            LOGGER = Logger.getLogger(Handler.class.getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void handle(HttpExchange exc) throws IOException {
-        System.out.println("\n--- new request came ---");
+        LOGGER.log(Level.INFO, "--- new request came ---");
 
         queryStr = exc.getRequestURI().getQuery();
         if (command.equals("search")) {
@@ -33,7 +47,7 @@ public class Handler implements HttpHandler {
     }
 
     private String commandSearch() {
-        System.out.println("- request command is: search");
+        LOGGER.log(Level.INFO, "- request command is: search");
 
         response = "";
         if (!checkBaseConnect()) {
@@ -50,13 +64,13 @@ public class Handler implements HttpHandler {
     }
 
     private boolean checkBaseConnect() {
-        System.out.print("- check users_base connect: ");
+        LOGGER.log(Level.INFO, "- check users_base connect: ");
 
         if (usersBase == null) {
             System.out.print("Error");
             return false;
         }
-        System.out.println("Ok");
+        LOGGER.log(Level.INFO, "Ok");
         return true;
     }
 
@@ -69,7 +83,7 @@ public class Handler implements HttpHandler {
     }
 
     private String parseQuery() {
-        System.out.println("- query parse: ");
+        LOGGER.log(Level.INFO, "- query parse: ");
 
         String[] array = queryStr.split("&");
         for (String str: array) {
@@ -83,7 +97,7 @@ public class Handler implements HttpHandler {
             }
             response += tmp;
         }
-        System.out.println("- response: Ok ");
+        LOGGER.log(Level.INFO, "--- response done --- ");
         return "[" + response +"]" ;
     }
 
@@ -102,7 +116,7 @@ public class Handler implements HttpHandler {
         for (User user: usersBase) {
             if (pair[1].equalsIgnoreCase(user.getName()) ||
                     pair[1].equalsIgnoreCase(user.getId())) {
-                System.out.println(" request found");
+                LOGGER.log(Level.INFO, " request found");
                 if (!result.equals("")) {
                     result += ",";
                 }
