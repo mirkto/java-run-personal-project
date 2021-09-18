@@ -3,13 +3,12 @@ package src;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class Handler implements HttpHandler {
@@ -22,19 +21,11 @@ public class Handler implements HttpHandler {
     public void setUserBase(List<User> newBase) { this.usersBase = newBase; }
     public Handler setResponse(String message) { response = message; return this; }
 
-    static Logger LOGGER;
-    static {
-        try(FileInputStream ins = new FileInputStream("server/src/data/log.config")) {
-            LogManager.getLogManager().readConfiguration(ins);
-            LOGGER = Logger.getLogger(Handler.class.getName());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    private static final Logger LOGGER = Logger.getLogger(Handler.class.getName());
 
     @Override
     public void handle(HttpExchange exc) throws IOException {
-        LOGGER.log(Level.INFO, "--- new request came ---");
+        LOGGER.info( "--- new request came ---");
 
         queryStr = exc.getRequestURI().getQuery();
         if (command.equals("search")) {
@@ -47,7 +38,7 @@ public class Handler implements HttpHandler {
     }
 
     private String commandSearch() {
-        LOGGER.log(Level.INFO, "- request command is: search");
+        LOGGER.info( "- request command is: search");
 
         response = "";
         if (!checkBaseConnect()) {
@@ -56,34 +47,39 @@ public class Handler implements HttpHandler {
         if (!checkQuery()) {
             return usersBase.toString();
         }
-        response = parseQuery();
-        if (response == null){
+        ArrayList<Pair> queryArr = parseQuery();
+        if (queryArr == null){
             return "<h1>Error: not correct query</h1>\n<h1>[]</h1>";
         }
+        for (Pair p: queryArr) {
+            System.out.println(" - " + p.getKey() + ":" + p.getValue() );
+        }
+
+        LOGGER.info( "--- response done --- ");
         return response;
     }
 
     private boolean checkBaseConnect() {
-        LOGGER.log(Level.INFO, "- check users_base connect: ");
-
+        LOGGER.info( "- check users_base connect");
         if (usersBase == null) {
-            System.out.print("Error");
+            LOGGER.severe( "- database loading error");
             return false;
         }
-        LOGGER.log(Level.INFO, "Ok");
         return true;
     }
 
     private boolean checkQuery() {
+        LOGGER.info( "- check query");
         if (queryStr == null) {
-            System.out.print("- no query: return user_base");
+            LOGGER.info( "- no query: return user_base");
             return false;
         }
         return true;
     }
 
-    private String parseQuery() {
-        LOGGER.log(Level.INFO, "- query parse: ");
+    private ArrayList<Pair> parseQuery() {
+        LOGGER.info( "- query parse: ");
+        ArrayList<Pair> query = new ArrayList<>();
 
         String[] array = queryStr.split("&");
         for (String str: array) {
@@ -91,20 +87,18 @@ public class Handler implements HttpHandler {
             if (!checkPair(pair)) {
                 return null;
             }
-            String tmp = addToResponse(pair);
-            if (!tmp.isEmpty() && !response.isEmpty()) {
-                response += ",";
+            Pair tmp = new Pair(pair[0],pair[1]);
+            if (!query.contains(tmp)) {
+                query.add(tmp);
             }
-            response += tmp;
         }
-        LOGGER.log(Level.INFO, "--- response done --- ");
-        return "[" + response +"]" ;
+        return query;
     }
 
     private boolean checkPair(String[] pair) {
         if (!pair[0].equalsIgnoreCase("name") &&
                 !pair[0].equalsIgnoreCase("id")) {
-            System.out.print("Error: \"" + pair[0] + "\"not correct query");
+            LOGGER.severe( "Error: \"" + pair[0] + "\"not correct query");
             return false;
         }
         return true;
@@ -116,7 +110,7 @@ public class Handler implements HttpHandler {
         for (User user: usersBase) {
             if (pair[1].equalsIgnoreCase(user.getName()) ||
                     pair[1].equalsIgnoreCase(user.getId())) {
-                LOGGER.log(Level.INFO, " request found");
+                LOGGER.info( " request found");
                 if (!result.equals("")) {
                     result += ",";
                 }

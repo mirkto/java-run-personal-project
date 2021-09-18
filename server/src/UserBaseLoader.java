@@ -1,14 +1,16 @@
 package src;
 
 import org.codehaus.jackson.map.ObjectMapper;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class UserBaseLoader {
+    private static final Logger LOGGER = Logger.getLogger(Handler.class.getName());
+
     public static List<User> loadBase() throws IOException {
         String fileName = "server/src/data/userBase.json";
         String jsonFile = new String(Files.readAllBytes(Paths.get(fileName)));
@@ -21,19 +23,19 @@ public class UserBaseLoader {
     }
 
     static void checkBase(List<User> userList) {
-        System.out.print("--- checking the UserBase:");
+        LOGGER.info("--- checking the UserBase:");
 
         if (userList == null) {
-            System.out.println(" EMPTY base");
+            LOGGER.info(" EMPTY base");
             return ;
         }
 
         for (User user : userList) {
             if (user == null) {
-                System.out.println(" EMPTY user");
+                LOGGER.info(" EMPTY user");
                 return ;
             }
         }
-        System.out.println(" OK ---");
+        LOGGER.info(" OK ---");
     }
 }

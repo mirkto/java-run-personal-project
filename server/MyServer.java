@@ -3,9 +3,11 @@ import src.HandlerPages;
 import src.User;
 import src.UserBaseLoader;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.logging.LogManager;
 
 public class MyServer {
     public static void main(String[] args) throws IOException {
@@ -20,5 +22,15 @@ public class MyServer {
 
         server.setExecutor(null);
         server.start();
+    }
+
+    static {
+        // JVM-D java.util.logging.config.file=<server/src/data/log.config>
+        String fileName = "server/src/data/log.config";
+        try(FileInputStream config = new FileInputStream(fileName)) {
+            LogManager.getLogManager().readConfiguration(config);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
