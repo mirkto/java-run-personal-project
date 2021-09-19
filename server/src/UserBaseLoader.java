@@ -1,6 +1,7 @@
 package src;
 
 import org.codehaus.jackson.map.ObjectMapper;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,19 +24,16 @@ public class UserBaseLoader {
     }
 
     static void checkBase(List<User> userList) {
-        LOGGER.info("--- checking the UserBase:");
-
-        if (userList == null) {
-            LOGGER.info(" EMPTY base");
-            return ;
+        LOGGER.info("--- check UserBase");
+        if (userList.isEmpty()) {
+            LOGGER.warning("- empty base");
         }
-
         for (User user : userList) {
-            if (user == null) {
-                LOGGER.info(" EMPTY user");
-                return ;
+            if (user.getId() == null ||
+                    user.getName() == null) {
+                LOGGER.warning("- found empty user ");
             }
+            System.out.println(user);
         }
-        LOGGER.info(" OK ---");
     }
 }

@@ -8,24 +8,34 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 public class Handler implements HttpHandler {
+    private static final Logger LOGGER = Logger.getLogger(Handler.class.getName());
+
     private List<User> usersBase = null;
     private String queryStr = null;
     private String command = "default";
-    private String response = "<h1>This is \"java run personal task\" by ngonzo.</h1>";
+    private String response = "";
 
-    public void setCommand(String command) { this.command = command; }
-    public void setUserBase(List<User> newBase) { this.usersBase = newBase; }
-    public Handler setResponse(String message) { response = message; return this; }
+    //------------- getters and setters -------------
+    public void setCommand(String command) {
+        this.command = command;
+    }
 
-    private static final Logger LOGGER = Logger.getLogger(Handler.class.getName());
+    public void setUserBase(List<User> newBase) {
+        this.usersBase = newBase;
+    }
+
+    //------------- public methods -------------
+    public Handler setResponse(String message) {
+        response = message;
+        return this;
+    }
 
     @Override
     public void handle(HttpExchange exc) throws IOException {
-        LOGGER.info( "--- new request came ---");
+        LOGGER.info("--- new request came ---");
 
         queryStr = exc.getRequestURI().getQuery();
         if (command.equals("search")) {
@@ -37,86 +47,96 @@ public class Handler implements HttpHandler {
         os.close();
     }
 
+    //------------- private methods -------------
     private String commandSearch() {
-        LOGGER.info( "- request command is: search");
+        LOGGER.info("- request command is: search");
 
-        response = "";
         if (!checkBaseConnect()) {
-            return "<h1>Error: database loading error</h1>";
+            return "[]";
         }
-        if (!checkQuery()) {
+        if (queryStr == null) {
             return usersBase.toString();
         }
-        ArrayList<Pair> queryArr = parseQuery();
-        if (queryArr == null){
-            return "<h1>Error: not correct query</h1>\n<h1>[]</h1>";
+        ArrayList<Pair> queryArray = parseQuery();
+        if (queryArray == null) {
+            return "[]";
         }
-        for (Pair p: queryArr) {
-            System.out.println(" - " + p.getKey() + ":" + p.getValue() );
-        }
-
-        LOGGER.info( "--- response done --- ");
-        return response;
+        ArrayList<User> usersArr = searchUsers(queryArray);
+        return responseBuilder(usersArr);
     }
 
     private boolean checkBaseConnect() {
-        LOGGER.info( "- check users_base connect");
+        LOGGER.info("- connect usersBase");
         if (usersBase == null) {
-            LOGGER.severe( "- database loading error");
+            LOGGER.severe("- database loading error");
             return false;
         }
-        return true;
-    }
-
-    private boolean checkQuery() {
-        LOGGER.info( "- check query");
-        if (queryStr == null) {
-            LOGGER.info( "- no query: return user_base");
+        if (usersBase.isEmpty()) {
+            LOGGER.warning("- database is empty");
             return false;
         }
         return true;
     }
 
     private ArrayList<Pair> parseQuery() {
-        LOGGER.info( "- query parse: ");
-        ArrayList<Pair> query = new ArrayList<>();
+        LOGGER.info("- query parse");
+        ArrayList<Pair> queryArray = new ArrayList<>();
 
         String[] array = queryStr.split("&");
-        for (String str: array) {
-            String[] pair = str.split("=");
-            if (!checkPair(pair)) {
+        for (String str : array) {
+            Pair pair = createAndCheckPair(str);
+            if (pair == null) {
                 return null;
             }
-            Pair tmp = new Pair(pair[0],pair[1]);
-            if (!query.contains(tmp)) {
-                query.add(tmp);
+            if (!queryArray.contains(pair)) {
+                queryArray.add(pair);
             }
         }
-        return query;
+        return queryArray;
     }
 
-    private boolean checkPair(String[] pair) {
-        if (!pair[0].equalsIgnoreCase("name") &&
-                !pair[0].equalsIgnoreCase("id")) {
-            LOGGER.severe( "Error: \"" + pair[0] + "\"not correct query");
-            return false;
+    private Pair createAndCheckPair(String str) {
+        Pair pair;
+        try {
+            pair = new Pair(str.split("="));
+        } catch (Pair.manyArgumentsException e) {
+            LOGGER.severe("- wrong argument for query value");
+            return null;
         }
-        return true;
+        if (!pair.getKey().equalsIgnoreCase("name") &&
+                !pair.getKey().equalsIgnoreCase("id")) {
+            LOGGER.severe("- \"" + pair.getKey() + "\" is not correct query");
+            return null;
+        }
+        return pair;
     }
 
+    private ArrayList<User> searchUsers(ArrayList<Pair> queryArr) {
 
-    private String addToResponse(String[] pair) {
-        String result = "";
-        for (User user: usersBase) {
-            if (pair[1].equalsIgnoreCase(user.getName()) ||
-                    pair[1].equalsIgnoreCase(user.getId())) {
-                LOGGER.info( " request found");
-                if (!result.equals("")) {
-                    result += ",";
+        ArrayList<User> foundUsers = new ArrayList<>();
+        for (Pair pair : queryArr) {
+            for (User user : usersBase) {
+                if (pair.getValue().equalsIgnoreCase(user.getName()) ||
+                        pair.getValue().equalsIgnoreCase(user.getId())) {
+                    if (!foundUsers.contains(user)) {
+                        foundUsers.add(user);
+                    }
                 }
-                result += user.toString();
             }
         }
-        return result;
+        return foundUsers;
+    }
+
+    private String responseBuilder(ArrayList<User> usersArr) {
+        StringBuilder tmpResponse = new StringBuilder();
+        for (User user : usersArr) {
+            if (!tmpResponse.toString().equals("")) {
+                tmpResponse.append(",");
+            }
+            tmpResponse.append(user.toString());
+        }
+        tmpResponse.insert(0,"[");
+        tmpResponse.append("]");
+        return tmpResponse.toString();
     }
 }

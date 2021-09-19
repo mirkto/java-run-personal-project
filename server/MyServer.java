@@ -11,14 +11,14 @@ import java.util.logging.LogManager;
 
 public class MyServer {
     public static void main(String[] args) throws IOException {
-        InetSocketAddress   address = new InetSocketAddress(8080);
-        HttpServer          server = HttpServer.create(address, 0);
-        List<User>          usersBase = UserBaseLoader.loadBase();
+        InetSocketAddress address = new InetSocketAddress(8080);
+        HttpServer server = HttpServer.create(address, 0);
+        List<User> usersBase = UserBaseLoader.loadBase();
 
         server.createContext("/", HandlerPages.DefaultPage());
         server.createContext("/my", HandlerPages.MyPageHandler());
-        server.createContext("/friends", HandlerPages.FriendsListHandler(usersBase));
-        server.createContext("/friends/search", HandlerPages.FriendsSearchHandler(usersBase));
+        server.createContext("/my/friends", HandlerPages.FriendsListHandler(usersBase));
+        server.createContext("/my/friends/search", HandlerPages.FriendsSearchHandler(usersBase));
 
         server.setExecutor(null);
         server.start();
@@ -27,7 +27,7 @@ public class MyServer {
     static {
         // JVM-D java.util.logging.config.file=<server/src/data/log.config>
         String fileName = "server/src/data/log.config";
-        try(FileInputStream config = new FileInputStream(fileName)) {
+        try (FileInputStream config = new FileInputStream(fileName)) {
             LogManager.getLogManager().readConfiguration(config);
         } catch (IOException e) {
             e.printStackTrace();

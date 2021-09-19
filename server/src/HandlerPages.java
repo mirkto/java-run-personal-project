@@ -6,7 +6,7 @@ import java.util.List;
 public class HandlerPages {
 
     public static Handler DefaultPage() {
-        return new Handler();
+        return new Handler().setResponse("<h1>This is \"personal project\" by ngonzo.</h1>");
     }
 
     public static Handler MyPageHandler() {
@@ -23,5 +23,4 @@ public class HandlerPages {
         response.setCommand("search");
         return response;
     }
-
 }
