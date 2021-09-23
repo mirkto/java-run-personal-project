@@ -7,11 +7,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
 public class Handler implements HttpHandler {
-    private static final Logger LOGGER = Logger.getLogger(Handler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger("Handler");
 
     private List<User> usersBase = null;
     private String queryStr = null;
@@ -57,12 +58,12 @@ public class Handler implements HttpHandler {
         if (queryStr == null) {
             return usersBase.toString();
         }
-        ArrayList<Pair> queryArray = parseQuery();
+        LinkedHashSet<String> queryArray = parseQuery();
         if (queryArray == null) {
             return "[]";
         }
-        ArrayList<User> usersArr = searchUsers(queryArray);
-        return responseBuilder(usersArr);
+        ArrayList<User> usersArray = searchUsers(queryArray);
+        return responseBuilder(usersArray);
     }
 
     private boolean checkBaseConnect() {
@@ -78,46 +79,30 @@ public class Handler implements HttpHandler {
         return true;
     }
 
-    private ArrayList<Pair> parseQuery() {
+    private LinkedHashSet<String> parseQuery() {
         LOGGER.info("- query parse");
-        ArrayList<Pair> queryArray = new ArrayList<>();
-
+        LinkedHashSet<String> queryArray = new LinkedHashSet<>();
+        int key = 0;
         String[] array = queryStr.split("&");
         for (String str : array) {
-            Pair pair = createAndCheckPair(str);
-            if (pair == null) {
+            String[] pair = str.split("=");
+            if (pair.length != 2) {
+                LOGGER.severe("- not correct query");
                 return null;
             }
-            if (!queryArray.contains(pair)) {
-                queryArray.add(pair);
+            if ("name".equals(pair[0]) || "id".equals(pair[0])) {
+                queryArray.add(pair[1].toLowerCase());
             }
         }
         return queryArray;
     }
 
-    private Pair createAndCheckPair(String str) {
-        Pair pair;
-        try {
-            pair = new Pair(str.split("="));
-        } catch (Pair.manyArgumentsException e) {
-            LOGGER.severe("- wrong argument for query value");
-            return null;
-        }
-        if (!pair.getKey().equalsIgnoreCase("name") &&
-                !pair.getKey().equalsIgnoreCase("id")) {
-            LOGGER.severe("- \"" + pair.getKey() + "\" is not correct query");
-            return null;
-        }
-        return pair;
-    }
-
-    private ArrayList<User> searchUsers(ArrayList<Pair> queryArr) {
+    private ArrayList<User> searchUsers(LinkedHashSet<String> queryArray) {
 
         ArrayList<User> foundUsers = new ArrayList<>();
-        for (Pair pair : queryArr) {
+        for (String value : queryArray) {
             for (User user : usersBase) {
-                if (pair.getValue().equalsIgnoreCase(user.getName()) ||
-                        pair.getValue().equalsIgnoreCase(user.getId())) {
+                if (user.matches(value)) {
                     if (!foundUsers.contains(user)) {
                         foundUsers.add(user);
                     }
@@ -129,13 +114,13 @@ public class Handler implements HttpHandler {
 
     private String responseBuilder(ArrayList<User> usersArr) {
         StringBuilder tmpResponse = new StringBuilder();
+        tmpResponse.append("[");
         for (User user : usersArr) {
-            if (!tmpResponse.toString().equals("")) {
+            if (tmpResponse.length() > 1) {
                 tmpResponse.append(",");
             }
             tmpResponse.append(user.toString());
         }
-        tmpResponse.insert(0,"[");
         tmpResponse.append("]");
         return tmpResponse.toString();
     }

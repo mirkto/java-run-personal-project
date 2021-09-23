@@ -1,22 +1,22 @@
 [
   {
-    "id":"01",
-    "name":"Ivan"
+    "id": "01",
+    "name": "Ivan"
   },
   {
-    "id":"02",
-    "name":"Sasha"
+    "id": "02",
+    "name": "Sasha"
   },
   {
-    "id":"03",
-    "name":"Dasha"
+    "id": "03",
+    "name": "Dasha"
   },
   {
-    "id":"04",
-    "name":"Pavel"
+    "id": "04",
+    "name": "Pavel"
   },
   {
-    "id":"05",
-    "name":"IvAn"
+    "id": "05",
+    "name": "IvAn"
   }
 ]

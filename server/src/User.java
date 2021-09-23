@@ -14,23 +14,27 @@ public class User {
     }
 
     //------------- getters and setters -------------
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     //------------- methods -------------
+    public boolean matches(String str) {
+        return str.equalsIgnoreCase(name) || str.equalsIgnoreCase(id);
+    }
+
     @Override
     public String toString() {
         return "{\"id\":\"" + id + "\",\"name\":\"" + name + "\"}";

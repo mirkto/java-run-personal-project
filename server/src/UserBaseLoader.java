@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class UserBaseLoader {
-    private static final Logger LOGGER = Logger.getLogger(Handler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger("UserBaseLoader");
 
     public static List<User> loadBase() throws IOException {
         String fileName = "server/src/data/userBase.json";
@@ -29,8 +29,7 @@ public class UserBaseLoader {
             LOGGER.warning("- empty base");
         }
         for (User user : userList) {
-            if (user.getId() == null ||
-                    user.getName() == null) {
+            if (user.getId() == null || user.getName() == null) {
                 LOGGER.warning("- found empty user ");
             }
             System.out.println(user);
