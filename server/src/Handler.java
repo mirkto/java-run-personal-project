@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class Handler implements HttpHandler {
-    private static final Logger LOGGER = Logger.getLogger("Handler");
+    private static final Logger LOGGER = Logger.getLogger(Handler.class.getName());
 
     private List<User> usersBase = null;
     private String queryStr = null;

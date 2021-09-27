@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class UserBaseLoader {
-    private static final Logger LOGGER = Logger.getLogger("UserBaseLoader");
+    private static final Logger LOGGER = Logger.getLogger(UserBaseLoader.class.getName());
 
     public static List<User> loadBase() throws IOException {
         String fileName = "server/src/data/userBase.json";
