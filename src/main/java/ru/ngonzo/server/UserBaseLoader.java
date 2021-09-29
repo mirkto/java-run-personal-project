@@ -1,6 +1,6 @@
-package src;
+package ru.ngonzo.server;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,7 +13,7 @@ public class UserBaseLoader {
     private static final Logger LOGGER = Logger.getLogger(UserBaseLoader.class.getName());
 
     public static List<User> loadBase() throws IOException {
-        String fileName = "server/src/data/userBase.json";
+        String fileName = "src/main/resources/userBase.json";
         String jsonFile = new String(Files.readAllBytes(Paths.get(fileName)));
 
         ObjectMapper mapper = new ObjectMapper();

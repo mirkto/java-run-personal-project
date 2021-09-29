@@ -1,4 +1,4 @@
-package src;
+package ru.ngonzo.server;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

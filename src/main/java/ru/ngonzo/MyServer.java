@@ -1,7 +1,9 @@
+package ru.ngonzo;
+
 import com.sun.net.httpserver.HttpServer;
-import src.HandlerPages;
-import src.User;
-import src.UserBaseLoader;
+import ru.ngonzo.server.HandlerPages;
+import ru.ngonzo.server.User;
+import ru.ngonzo.server.UserBaseLoader;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,7 +28,7 @@ public class MyServer {
 
     static {
         // JVM-D java.util.logging.config.file=<server/src/data/log.config>
-        String fileName = "server/src/data/log.config";
+        String fileName = "src/main/resources/log.config";
         try (FileInputStream config = new FileInputStream(fileName)) {
             LogManager.getLogManager().readConfiguration(config);
         } catch (IOException e) {
