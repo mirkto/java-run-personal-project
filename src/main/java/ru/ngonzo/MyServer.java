@@ -1,7 +1,6 @@
 package ru.ngonzo;
 
 import com.sun.net.httpserver.HttpServer;
-import ru.ngonzo.server.Handler;
 import ru.ngonzo.server.HandlerPages;
 import ru.ngonzo.server.User;
 import ru.ngonzo.server.UserBaseLoader;
@@ -14,10 +13,6 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class MyServer {
-    public MyServer(Integer port) throws IOException {
-        main(new String[] {port.toString()});
-    }
-
     public static void main(String[] args) throws IOException {
         InetSocketAddress address = new InetSocketAddress(initPort(args));
         HttpServer server = HttpServer.create(address, 0);
@@ -37,12 +32,15 @@ public class MyServer {
         int port = 8080;
         if (args.length == 1) {
             port = Integer.parseInt(args[0]);
-            if (port < 0 || port > 65535) {
-                throw new IOException("Error, invalid port number");
-            }
         }
         LOGGER.info("--- input port number is " + port + " ---");
         return port;
+    }
+
+    public void usePort(Integer port) throws IOException {
+        if (port != null) {
+            main(new String[]{port.toString()});
+        }
     }
 
     static {

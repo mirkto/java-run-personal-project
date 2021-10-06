@@ -56,7 +56,7 @@ public class Handler implements HttpHandler {
             return "[]";
         }
         if (queryStr == null) {
-            return usersBase.toString();
+            return usersBase.toString().replace(", {", ",{");
         }
         LinkedHashSet<String> queryArray = parseQuery();
         if (queryArray == null) {
