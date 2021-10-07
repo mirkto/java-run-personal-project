@@ -14,9 +14,9 @@ public class unitTests {
     int port;
     MyServer sutMyServer;
     OkHttpClient sutClient;
-    static final int maxPort = 65535;
-    static final int minPort = 49152;
-    static final int range = maxPort - minPort + 1;
+    static final int MAX_PORT = 65535;
+    static final int MIN_PORT = 49152;
+    static final int RANGE = MAX_PORT - MIN_PORT + 1;
 
     private String StripTags(String text) {
         if (!text.matches("<.+?>.+</.+?>")) {
@@ -30,7 +30,7 @@ public class unitTests {
     @Before
     public void setUp() throws IOException {
         sutMyServer = new MyServer();
-        port = new Random().nextInt(range) + minPort;
+        port = new Random().nextInt(RANGE) + MIN_PORT;
         sutMyServer.usePort(port);
         sutClient = new OkHttpClient();
     }
