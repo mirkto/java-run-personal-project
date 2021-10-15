@@ -1,4 +1,4 @@
-package src;
+package ru.ngonzo.server;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -56,7 +56,7 @@ public class Handler implements HttpHandler {
             return "[]";
         }
         if (queryStr == null) {
-            return usersBase.toString();
+            return usersBase.toString().replace(", {", ",{");
         }
         LinkedHashSet<String> queryArray = parseQuery();
         if (queryArray == null) {

@@ -1,20 +1,19 @@
-package src;
+package ru.ngonzo.server;
 
-import java.io.IOException;
 import java.util.List;
 
 public class HandlerPages {
 
     public static Handler DefaultPage() {
-        return new Handler().setResponse("<h1>This is \"personal project\" by ngonzo.</h1>");
+        return new Handler().setResponse("<h1>This is \"personal project\" by ru.ngonzo.</h1>");
     }
 
     public static Handler MyPageHandler() {
         return new Handler().setResponse("<h1>My Account page</h1>");
     }
 
-    public static Handler FriendsListHandler(List<User> usersBase) throws IOException {
-        return new Handler().setResponse("<h1>" + usersBase.toString() + "</h1>");
+    public static Handler FriendsListHandler(List<User> usersBase) {
+        return new Handler().setResponse("<h1>" + usersBase.toString().replace(", {", ",{") + "</h1>");
     }
 
     public static Handler FriendsSearchHandler(List<User> usersBase) {

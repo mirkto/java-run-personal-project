@@ -1,4 +1,4 @@
-package src;
+package ru.ngonzo.server;
 
 public class User {
     private String id;
