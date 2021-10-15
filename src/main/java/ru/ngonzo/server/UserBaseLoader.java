@@ -12,9 +12,8 @@ import java.util.logging.Logger;
 public class UserBaseLoader {
     private static final Logger LOGGER = Logger.getLogger(UserBaseLoader.class.getName());
 
-    public static List<User> loadBase() throws IOException {
-        String fileName = "src/main/resources/userBase.json";
-        String jsonFile = new String(Files.readAllBytes(Paths.get(fileName)));
+    public static List<User> loadBase(String basePath) throws IOException {
+        String jsonFile = new String(Files.readAllBytes(Paths.get(basePath)));
 
         ObjectMapper mapper = new ObjectMapper();
         List<User> objectList = Arrays.asList(mapper.readValue(jsonFile, User[].class));
